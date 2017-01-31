@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 app = Flask(__name__)
 
 from sqlalchemy import create_engine
@@ -17,18 +17,9 @@ def restaurantMenu(restaurantId):
     restaurant = session.query(Restaurant).filter_by(id = restaurantId).one()
     items = session.query(MenuItem).filter_by(restaurant_id = restaurantId)
 
-    output = ""
-    for item in items:
-        output += item.name
-        output += "<br>"
-        output += item.price
-        output += "<br>"
-        output += item.description
-        output += "<br>"
-        output += "<br>"
-    return output
+    return render_template('menu.html', restaurant = restaurant, items = items)
 
-@app.route('/restaurant/<int:restaurantId>/new/')
+@app.route('/restaurant/<int:restaurantId>/new/', methods=['GET', 'POST'])
 def newMenuItem(restaurantId):
     return "page to create a new menu item. Task 1 complete!"
 
