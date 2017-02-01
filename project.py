@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, redirect, url_for
 app = Flask(__name__)
 
 from sqlalchemy import create_engine
@@ -19,13 +19,22 @@ def restaurantMenu(restaurantId):
 
     return render_template('menu.html', restaurant = restaurant, items = items)
 
+
 @app.route('/restaurant/<int:restaurantId>/new/', methods=['GET', 'POST'])
 def newMenuItem(restaurantId):
-    return "page to create a new menu item. Task 1 complete!"
+    if request.method == 'POST':
+        newItem = MenuItem(name = request.form['name'], restaurant_id = restaurantId)
+        session.add(newItem)
+        session.commit()
+        return redirect(url_for('restaurantMenu', restaurantId = restaurantId))
+    else:
+        return render_template('newmenuItem.html', restaurantId = restaurantId)
+
 
 @app.route('/restaurant/<int:restaurantId>/<int:menu_id>/edit/')
 def editMenuItem(restaurantId, menu_id):
     return "page to edit a menu item. Task 2 complete!"
+
 
 @app.route('/restaurant/<int:restaurantId>/<int:menu_id>/delete/')
 def deleteMenuItem(restaurantId, menu_id):
