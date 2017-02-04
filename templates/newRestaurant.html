@@ -1,12 +1,14 @@
 <html>
 <head>
+  <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}" />
 </head>
 <body>
   <h1>New Restaurant</h1>
-  <form action="#" method="post">
+  <form action="{{url_for('newRestaurant')}}" method="post">
     <p>Name: </p>
     <input type="text" name="newRestaurantName" placeholder="New Restaurant Name"/>
     <input type="submit" value="create"/>
+    <a href="{{url_for('showRestaurants')}}">Cancel</a>
   </form>
 </body>
 </html>

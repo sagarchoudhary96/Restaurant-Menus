@@ -5,7 +5,7 @@
   <body>
     <h1>Edit Menu Item</h1>
 
-    <form action="{{ url_for('editMenuItem', restaurantId = item.restaurant_id, menu_id = item.id) }}" method="post">
+    <form action="{{ url_for('editMenuItem', restaurant_id = item.restaurant_id, menu_id = item.id) }}" method="post">
       <dl>
         <dt>Name:</dt>
         <dd>
@@ -50,7 +50,7 @@
       </dl>
 
       <input type="submit" value="Edit"/>
-      <a href="{{url_for('restaurantMenu', restaurantId = item.restaurant_id)}}">Cancel</a>
+      <a href="{{url_for('showMenu', restaurant_id = item.restaurant_id)}}">Cancel</a>
     </form>
   </body>
 </html>
