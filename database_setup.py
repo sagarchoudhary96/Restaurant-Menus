@@ -17,6 +17,13 @@ class Restaurant(Base):
     name = Column(String(80), nullable = False)
     id = Column(Integer, primary_key = True)
 
+    @property
+    def serialize(self):
+        # return object data in serializable format
+        return {
+            'id' : self.id,
+            'name' : self.name
+        }
 
 # class to reference Menus item table
 class MenuItem(Base):
