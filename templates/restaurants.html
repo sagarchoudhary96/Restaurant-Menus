@@ -1,32 +1,55 @@
-<html>
-<head>
-  <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}" />
-</head>
-<body>
-  <h1>Restaurants</h1>
-  <br>
-  <a href='{{url_for('newRestaurant')}}'>Create new Restaurant</a>
+{% extends "main.html" %}
+{% block content %}
+{% include "header.html" %}
+	<div class="row top-menu">
+		<div class="col-md-10"></div>
+		<div class="col-md-2 text-right">
+					</div>
+	</div>
+	<div class="row divider blue">
+		<div class="col-md-12"></div>
+	</div>
+	<div class="row banner main">
+		<div class="col-md-1"></div>
+		<div class="col-md-11 padding-none">
+			<h1>Restaurants</h1>
+		</div>
+	</div>
 
-  <div class="flash">
-    {% with messages = get_flashed_messages() %}
+<div class = 'flash'>
+		      {% with messages = get_flashed_messages() %}
       {% if messages %}
-
-      <ul>
+          
+        <ul>
         {% for message in messages %}
-        <li><strong> {{ message }}</strong></li>
+            <li> <strong> {{ message }} </strong> </li>
         {% endfor %}
-      </ul>
-      {% endif %}
+        </ul>
+        {% endif %}
     {% endwith %}
-  </div>
 
-  {% for restaurant in restaurants %}
-  <h3>{{restaurant.name}}</h3>
-  <a href="{{url_for('showMenu', restaurant_id = restaurant.id)}}">Show Restaurant Menu</a>
-  <br>
-  <a href="{{url_for('editRestaurant', restaurant_id = restaurant.id)}}" >Edit Restaurant</a>
-  <br>
-  <a href="{{url_for('deleteRestaurant', restaurant_id = restaurant.id)}}">Delete Restaurant</a>
-  {% endfor %}
-</body>
-</html>
+</div>
+	
+	<div class="row padding-top padding-bottom">
+		<div class="col-md-1"></div>
+		<div class="col-md-10 padding-none">
+			<a href="{{url_for('newRestaurant')}}">
+				<button class="btn btn-default" id="new-restaurant">
+					<span class="glyphicon glyphicon-cutlery" aria-hidden="true"></span>Add Restaurant
+				</button>
+			</a>
+		</div>
+		<div class="col-md-1"></div>
+	</div>
+	{% for restaurant in restaurants %}
+		<a href = "{{url_for('showMenu', restaurant_id = restaurant.id)}}">
+			<div class="row">
+				<div class="col-md-1"></div>
+					<div class="col-md-10 restaurant-list">
+						<h3>{{restaurant.name}}</h3>
+					</div>
+				<div class="col-md-1"></div>
+			</div>
+		</a>
+	{% endfor %}
+{% endblock %}
