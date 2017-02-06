@@ -3,7 +3,7 @@ app = Flask(__name__)
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from database_setup import Base, Restaurant, MenuItem
+from database_setup import Base, Restaurant, MenuItem, User
 from flask import session as login_session
 import random, string
 
@@ -98,6 +98,12 @@ def gconnect():
     login_session['picture'] = data['picture']
     login_session['email'] = data['email']
 
+    #see if user exit in database else create a new one
+    user_id = getUserId(login_session['email'])
+    if not user_id:
+        user_id = createUser(login_session)
+        login_session['user_id'] = user_id
+
     output = ''
     output += '<h1>Welcome, '
     output += login_session['username']
@@ -108,6 +114,32 @@ def gconnect():
     flash("you are now logged in as %s" % login_session['username'])
     print "done!"
     return output
+
+# function to add new user to database
+def createUser(login_session):
+    name = login_session['username']
+    email = login_session['email']
+    picture = login_session['picture']
+
+    newUser = User( name = name, email = email, picture = picture)
+    session.add(newUser)
+    session.commit()
+    user = session.query(User).filter_by(email = email).one()
+    return user.id
+
+# function to get user info by user_id
+def getUserInfo(user_id):
+    user = session.query(User).filter_by(id = user_id).one()
+    return user
+
+# function to get user_id by their email
+def getUserId(email):
+    try:
+        user = session.query(User).filter_by(email = email).one()
+        return user.id
+    except:
+        return None
+
 
 # Disconnect -> Revoke current user's token and reset their login_session
 @app.route('/gdisconnect')
@@ -169,7 +201,7 @@ def newRestaurant():
     if 'username' not in login_session:
         return redirect('/login')
     if request.method == 'POST':
-        newRestaurant = Restaurant(name = request.form['newRestaurantName'])
+        newRestaurant = Restaurant(name = request.form['newRestaurantName'], user_id = login_session['user_id'])
         session.add(newRestaurant)
         session.commit()
         flash("New Restaurant Created!")
