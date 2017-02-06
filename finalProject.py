@@ -84,6 +84,7 @@ def gconnect():
         return response
 
     # Store the access token in the session for later use.
+    login_session['provider'] = "google"
     login_session['credentials'] = credentials
     login_session['gplus_id'] = gplus_id
 
