@@ -27,7 +27,7 @@ session = DBSession()
 def showLogin():
     state = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in xrange(32))
     login_session['state'] = state
-    return render_template("login.html")
+    return render_template("login.html", STATE = state)
 
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
@@ -120,11 +120,11 @@ def gdisconnect():
         return response
     # if user is connected we revoke current token
     access_token = credentials.access_token
-    url = 'https://account.google.com/o/oauth2/revoke?token=%s' %access_token
+    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % access_token
     h = httplib2.Http()
     result = h.request(url, 'GET')[0]
 
-    if result['startus'] == '200':
+    if result['status'] == '200':
         # reset the user's session
         del login_session['credentials']
         del login_session['gplus_id']
