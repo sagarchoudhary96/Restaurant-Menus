@@ -103,7 +103,7 @@ def gconnect():
     user_id = getUserId(login_session['email'])
     if not user_id:
         user_id = createUser(login_session)
-        login_session['user_id'] = user_id
+        login_session['gplus_id'] = user_id
 
     output = ''
     output += '<h1>Welcome, '
@@ -205,7 +205,7 @@ def newRestaurant():
     if 'username' not in login_session:
         return redirect('/login')
     if request.method == 'POST':
-        newRestaurant = Restaurant(name = request.form['newRestaurantName'], user_id = login_session['user_id'])
+        newRestaurant = Restaurant(name = request.form['newRestaurantName'], user_id = login_session['gplus_id'])
         session.add(newRestaurant)
         session.commit()
         flash("New Restaurant Created!")
@@ -218,7 +218,7 @@ def editRestaurant(restaurant_id):
     if 'username' not in login_session:
         return redirect('/login')
     restaurant = session.query(Restaurant).filter_by(id = restaurant_id).one()
-    if restaurant.user_id != login_session['user_id']:
+    if restaurant.user_id != login_session['gplus_id']:
         return "<script>function myfunction(){alert('you are not authorized to delete this restaurant.');}</script><body onload='myfunction()'>"
 
     if request.method == 'POST':
@@ -237,7 +237,7 @@ def deleteRestaurant(restaurant_id):
     restaurant = session.query(Restaurant).filter_by(id = restaurant_id).one()
     if 'username' not in login_session:
         return redirect('/login')
-    if restaurant.user_id != login_session['user_id']:
+    if restaurant.user_id != login_session['gplus_id']:
         return "<script>function myfunction(){alert('you are not authorized to delete this restaurant.');}</script><body onload='myfunction()'>"
 
     if request.method == 'POST':
@@ -254,7 +254,7 @@ def showMenu(restaurant_id):
     restaurant = session.query(Restaurant).filter_by(id = restaurant_id).one()
     creator = getUserInfo(restaurant.user_id)
     items = session.query(MenuItem).filter_by(restaurant_id = restaurant_id).all()
-    if 'username' not in login_session or creator.id != login_session['user_id']:
+    if 'username' not in login_session or creator.id != login_session['gplus_id']:
         return render_template('publicmenu.html', restaurant = restaurant, items = items, creator = creator)
     else:
         return render_template('menu.html', restaurant = restaurant, items = items, creator = creator)
