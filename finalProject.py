@@ -125,18 +125,18 @@ def createUser(login_session):
     newUser = User( name = name, email = email, picture = picture)
     session.add(newUser)
     session.commit()
-    user = session.query(User).filter_by(email = email).one()
+    user = session.query(User).filter_by(email = email).one_or_none()
     return user.id
 
 # function to get user info by user_id
 def getUserInfo(user_id):
-    user = session.query(User).filter_by(id = user_id).one()
+    user = session.query(User).filter_by(id = user_id).one_or_none()
     return user
 
 # function to get user_id by their email
 def getUserId(email):
     try:
-        user = session.query(User).filter_by(email = email).one()
+        user = session.query(User).filter_by(email = email).one_or_none()
         return user.id
     except:
         return None
@@ -218,8 +218,8 @@ def editRestaurant(restaurant_id):
     if 'username' not in login_session:
         return redirect('/login')
     restaurant = session.query(Restaurant).filter_by(id = restaurant_id).one()
-    if restaurant.user_id != login_session['gplus_id']:
-        return "<script>function myfunction(){alert('you are not authorized to delete this restaurant.');}</script><body onload='myfunction()'>"
+    if restaurant.user_id != float(login_session['gplus_id']):
+        return "<script>function myfunction(){alert('you are not authorized to edit this restaurant.');}</script><body onload='myfunction()'>"
 
     if request.method == 'POST':
         editedName = request.form['restaurantName']
@@ -237,7 +237,7 @@ def deleteRestaurant(restaurant_id):
     restaurant = session.query(Restaurant).filter_by(id = restaurant_id).one()
     if 'username' not in login_session:
         return redirect('/login')
-    if restaurant.user_id != login_session['gplus_id']:
+    if restaurant.user_id != float(login_session['gplus_id']):
         return "<script>function myfunction(){alert('you are not authorized to delete this restaurant.');}</script><body onload='myfunction()'>"
 
     if request.method == 'POST':
@@ -254,10 +254,11 @@ def showMenu(restaurant_id):
     restaurant = session.query(Restaurant).filter_by(id = restaurant_id).one()
     creator = getUserInfo(restaurant.user_id)
     items = session.query(MenuItem).filter_by(restaurant_id = restaurant_id).all()
-    if 'username' not in login_session or creator.id != login_session['gplus_id']:
-        return render_template('publicmenu.html', restaurant = restaurant, items = items, creator = creator)
-    else:
-        return render_template('menu.html', restaurant = restaurant, items = items, creator = creator)
+    if creator:
+        if 'username' not in login_session or creator.id != float(login_session['gplus_id']):
+            return render_template('publicmenu.html', restaurant = restaurant, items = items, creator = creator)
+
+    return render_template('menu.html', restaurant = restaurant, items = items, creator = creator)
 
 
 @app.route('/restaurant/<int:restaurant_id>/menu/new/', methods = ['GET', 'POST'])
@@ -269,7 +270,7 @@ def newMenuItem(restaurant_id):
         description = request.form['description']
         price = request.form['price']
         course = request.form['course']
-        newItem = MenuItem(name = name, description = description, price = price, course = course, restaurant_id = restaurant_id)
+        newItem = MenuItem(name = name, description = description, price = price, course = course, restaurant_id = restaurant_id, user_id = login_session['gplus_id'])
         session.add(newItem)
         session.commit()
         flash("new menu item created!")
